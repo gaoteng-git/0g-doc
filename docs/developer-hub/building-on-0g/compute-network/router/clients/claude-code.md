@@ -68,6 +68,28 @@ client sends. See [Privacy & ZDR](../privacy#enabling-privacy-mode).
   key, sessions otherwise start in Manual mode.
 - Everything under `env` also works as shell exports; `modelOverrides` does not.
 
+## Web search and web fetch
+
+- **WebFetch** works with every model. Claude Code fetches the page on your machine and
+  gives its text to the model.
+- **WebSearch** depends on the model. Claude Code sends it as Anthropic's `web_search`
+  server tool, which the Router forwards to the provider unchanged. The `claude-*` models
+  run the search and charge **$0.02** per search, shown as `web_search_cost` in
+  [`x_0g_trace.billing`](../features/chat-completions#x_0g_trace-always-present). Other
+  models, including `glm-5.3` and `0gm-1.0-35b-a3b`, may ignore the tool **without an
+  error**: the answer then comes from the model's own knowledge, not from the web.
+
+To search the web with another model, add a search [MCP server](https://code.claude.com/docs/en/mcp)
+and turn off the built-in tool so the model uses yours:
+
+```json
+{
+  "permissions": {
+    "deny": ["WebSearch"]
+  }
+}
+```
+
 ## Models
 
 Claude Code needs a model that serves the Anthropic Messages API:
